@@ -6,6 +6,7 @@ hold_delay = 200000000
 
 start_time = 0
 key_being_pressed = False
+last_release_time = 0
 
 dot = '.'
 dash = '-'
@@ -57,10 +58,10 @@ morse_map = {
 
 #Function is called after a delay
 #Only prints key if the array hasn't been updated since
-#it was called, meaning no more key strokes have been done
-def print_key(num_strokes: int):
+#it was called i.e. last_release_time hasn't changed
+def print_key(end_time):
     global dots_and_dashes
-    if len(dots_and_dashes) != num_strokes:
+    if end_time != last_release_time:
         return
     keyboard.write(morse_map.get(dots_and_dashes, ''))
     print(dots_and_dashes)
@@ -75,7 +76,7 @@ def key_pressed(key=None):
     key_being_pressed = True
 
 def key_released(key=None):
-    global key_being_pressed, dots_and_dashes
+    global key_being_pressed, dots_and_dashes, last_release_time
     key_being_pressed = False
 
     end_time = time.perf_counter_ns()
@@ -85,8 +86,10 @@ def key_released(key=None):
     else:
         print("Tap")
         dots_and_dashes += dot
+
+    last_release_time = end_time
     keyboard.call_later(print_key, 
-        args = ([len(dots_and_dashes)]), delay = 1)
+        args = ([end_time]), delay = 1)
 
 keyboard.add_hotkey(morse_key, key_pressed, suppress=True)
 keyboard.on_release_key(morse_key, key_released)
