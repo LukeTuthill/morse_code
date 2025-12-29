@@ -94,4 +94,4 @@ def key_released(key=None):
 keyboard.add_hotkey(morse_key, key_pressed, suppress=True)
 keyboard.on_release_key(morse_key, key_released)
 
-keyboard.wait('esc')
+keyboard.wait()
